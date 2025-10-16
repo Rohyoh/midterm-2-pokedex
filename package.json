@@ -1,0 +1,26 @@
+{
+  "name": "second_midterm_web",
+  "version": "1.0.0",
+  "description": "This is a project for the second midterm of our class of web development.",
+  "homepage": "https://github.com/Rohyoh/midterm-2-pokedex#readme",
+  "bugs": {
+    "url": "https://github.com/Rohyoh/midterm-2-pokedex/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rohyoh/midterm-2-pokedex.git"
+  },
+  "license": "ISC",
+  "author": "Rohyoh and Donovan-DEAD",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "node index.js"
+  },
+  "dependencies": {
+    "axios": "^1.12.2",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0"
+  }
+}
