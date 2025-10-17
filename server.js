@@ -9,8 +9,7 @@ app.set("view engine", "ejs");
 
 app.get("/", async (req, res) => {
     try {
-        const pokemonList = await getPokemonListPaginated(1, 151);
-        res.render("index.ejs", { pokemonList });
+        res.render("index.ejs");
     } catch (error) {
         console.error(error);
         res.status(500).send("Error loading Pokémon");

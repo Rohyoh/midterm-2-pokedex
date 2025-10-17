@@ -17,6 +17,23 @@
         </div>
     </header>
 
+<div class="container mt-4">
+    <nav>
+        <ul class="pagination" id="pagination">
+            <li class="page-item"><button class="page-link" onclick="loadPokemonGrid(1, 100)">1</button></li>
+            <li class="page-item"><button class="page-link" onclick="loadPokemonGrid(101, 200)">2</button></li>
+            <li class="page-item"><button class="page-link" onclick="loadPokemonGrid(201, 300)">3</button></li>
+            <li class="page-item"><button class="page-link" onclick="loadPokemonGrid(301, 400)">4</button></li>
+            <li class="page-item"><button class="page-link" onclick="loadPokemonGrid(401, 500)">5</button></li>
+            <li class="page-item"><button class="page-link" onclick="loadPokemonGrid(501, 600)">6</button></li>
+            <li class="page-item"><button class="page-link" onclick="loadPokemonGrid(601, 700)">7</button></li>
+            <li class="page-item"><button class="page-link" onclick="loadPokemonGrid(701, 800)">8</button></li>
+            <li class="page-item"><button class="page-link" onclick="loadPokemonGrid(801, 900)">9</button></li>
+            <li class="page-item"><button class="page-link" onclick="loadPokemonGrid(901, 1000)">10</button></li>
+        </ul>
+    </nav>
+</div>
+
     <div class="container mt-4">
         <div class="row" id="pokemonGrid">
             <!-- Pokémon -->
@@ -90,40 +107,53 @@
         };
 
        //Pokémon grid
-async function loadPokemonGrid() {
+async function loadPokemonGrid(start, end) {
     const grid = document.getElementById('pokemonGrid');
+    const pagination = [...document.getElementsByClassName('page-link')];
+    pagination.forEach(button => {
+        button.disabled = true;
+    });
     
-    for (let i = 1; i <= 151; i++) {
-        try {
-            const response = await fetch(`/pokemon/${i}`);
-            const pokemon = await response.json();
-            
-            //vvvv here we force the grid images to be front sprites of the pokémons 
-            const frontImage = pokemon.images.find(img => 
-                img.includes('front_default') || 
-                !img.includes('back') 
-            ) || pokemon.images[0];
-            
-            const col = document.createElement('div');
-            col.className = 'col-md-2 mb-3';
-            col.innerHTML = `
-                <div class="card pokemon-card" data-id="${pokemon.id}">
-                    <img src="${frontImage}" class="card-img-top" alt="${pokemon.name}">
-                    <div class="card-body text-center">
-                        <h6 class="card-title">${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</h6>
-                        <p class="card-text small">ID: ${pokemon.id}</p>
-                        <div class="types-container">
-                            ${pokemon.types.map(type => 
-                                `<span class="type-badge" style="background-color: ${typeColors[type]}">${type}</span>`
-                            ).join('')}
+
+    [...grid.children].forEach(child => child.remove());
+    
+    try {
+        for (let i = start; i <= end; i++) {
+            try {
+                const response = await fetch(`/pokemon/${i}`);
+                const pokemon = await response.json();
+                
+                //vvvv here we force the grid images to be front sprites of the pokémons 
+                const frontImage = pokemon.images.find(img => 
+                    img.includes('front_default') || 
+                    !img.includes('back') 
+                ) || pokemon.images[0];
+                
+                const col = document.createElement('div');
+                col.className = 'col-md-2 mb-3';
+                col.innerHTML = `
+                    <div class="card pokemon-card" data-id="${pokemon.id}">
+                        <img src="${frontImage}" class="card-img-top" alt="${pokemon.name}">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</h6>
+                            <p class="card-text small">ID: ${pokemon.id}</p>
+                            <div class="types-container">
+                                ${pokemon.types.map(type => 
+                                    `<span class="type-badge" style="background-color: ${typeColors[type]}">${type}</span>`
+                                ).join('')}
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
-            grid.appendChild(col);
-        } catch (error) {
-            console.error(`Failed to load Pokémon ${i}:`, error);
+                `;
+                grid.appendChild(col);
+            } catch (error) {
+                console.error(`Failed to load Pokémon ${i}:`, error);
+            }
         }
+    } finally {
+        pagination.forEach(button => {
+            button.disabled = false;
+        });
     }
 
     //event listeners
@@ -188,7 +218,7 @@ async function loadPokemonGrid() {
         }
 
         // Load grid when page is ready, yessirrrrr
-        document.addEventListener('DOMContentLoaded', loadPokemonGrid);
+        document.addEventListener('DOMContentLoaded',loadPokemonGrid(1,100));
     </script>
 </body>
 </html>
