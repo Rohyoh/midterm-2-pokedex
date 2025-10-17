@@ -27,3 +27,27 @@ export const getPokemonListPaginated = async (start, end)=>{
 
     return pokemon_list
 }
+
+export const getSpecificDataForPokemon = async (id)=>{
+    const data = await getGeneralInfoForPokemon(id)
+
+    const pokemon_info = {
+        name : data.name,
+        id : data.id,
+        images : Object.values(data.sprites).filter(image => { return (typeof(image) == "string")}),
+        types : data.types.map(type => type.type.name),
+        stats : data.stats.map(stat => {
+            return {
+                name : stat.stat.name,
+                value : stat.base_stat
+            }
+        }),
+        weight : data.weight,
+        height : data.height,
+        experience : data.base_experience,
+        abilities : data.abilities.map(ability => ability.ability.name),
+        moves : data.moves.map(move =>move.move.name),
+    }
+
+    return pokemon_info
+}
