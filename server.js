@@ -18,7 +18,7 @@ app.get("/", async (req, res) => {
 
 app.get("/pokemon/:id", async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
+        const id = (!isNaN(req.params.id))? parseInt(req.params.id) : req.params.id.toLowerCase();
         const pokemon = await getSpecificDataForPokemon(id);
         res.json(pokemon);
     } catch (error) {

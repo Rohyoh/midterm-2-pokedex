@@ -17,7 +17,7 @@
         </div>
     </header>
 
-<div class="container mt-4">
+<div class="container mt-4 d-flex justify-content-between">
     <nav>
         <ul class="pagination" id="pagination">
             <li class="page-item"><button class="page-link" onclick="loadPokemonGrid(1, 100)">1</button></li>
@@ -32,6 +32,9 @@
             <li class="page-item"><button class="page-link" onclick="loadPokemonGrid(901, 1000)">10</button></li>
         </ul>
     </nav>
+    <div class="w-25">
+        <input type="text" class="form-control" id="pokemonSearch" placeholder="Search Pokémon by ID or Name" onchange="searchPokemon(event)">
+    </div>
 </div>
 
     <div class="container mt-4">
@@ -107,6 +110,61 @@
         };
 
        //Pokémon grid
+async function searchPokemon(event) {
+    const pokemonId = event.target.value;
+    const grid = document.getElementById('pokemonGrid');
+    const pagination = [...document.getElementsByClassName('page-link')];
+
+    [...grid.children].forEach(child => child.remove());
+    pagination.forEach(button => {
+        button.disabled = true;
+    });
+
+    if (!pokemonId) {
+        loadPokemonGrid(1, 100);
+        return;
+    }
+
+    try {
+        const response = await fetch(`/pokemon/${pokemonId}`);
+        const pokemon = await response.json();
+
+        if (pokemon.error_message) {
+            grid.innerHTML = '<p class="text-center">Pokémon not found</p>';
+            return;
+        }
+
+        const frontImage = pokemon.images.find(img => 
+            img.includes('front_default') || 
+            !img.includes('back') 
+        ) || pokemon.images[0];
+        const col = document.createElement('div');
+        col.className = 'col-md-2 mb-3';
+        col.innerHTML = `
+            <div class="card pokemon-card" data-id="${pokemon.id}">
+                <img src="${frontImage}" class="card-img-top" alt="${pokemon.name}">
+                <div class="card-body text-center">
+                    <h6 class="card-title">${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</h6>
+                    <p class="card-text small">ID: ${pokemon.id}</p>
+                    <div class="types-container">
+                        ${pokemon.types.map(type => 
+                            `<span class="type-badge" style="background-color: ${typeColors[type]}">${type}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        grid.appendChild(col);
+
+        document.querySelectorAll('.pokemon-card').forEach(card => {
+            card.addEventListener('click', () => showPokemonDetails(card.dataset.id));
+        });
+    } catch (error) {
+        console.error(`Failed to load Pokémon ${pokemonId}:`, error);
+        grid.innerHTML = '<p class="text-center">Pokémon not found</p>';
+    }
+}
+
 async function loadPokemonGrid(start, end) {
     const grid = document.getElementById('pokemonGrid');
     const pagination = [...document.getElementsByClassName('page-link')];

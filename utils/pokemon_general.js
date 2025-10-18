@@ -3,7 +3,7 @@ import { upper_limit_for_id, lower_limit_for_id } from "./pokemon_vars.js";
 
 
 export const getGeneralInfoForPokemon = async (id)=>{
-    if ( id > upper_limit_for_id || id < lower_limit_for_id) return null
+    if (  typeof(id) != "string" && id > upper_limit_for_id || id < lower_limit_for_id) return null
     const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`)
 
     if (res.status != 200) return null
@@ -30,6 +30,7 @@ export const getPokemonListPaginated = async (start, end)=>{
 
 export const getSpecificDataForPokemon = async (id)=>{
     const data = await getGeneralInfoForPokemon(id)
+    if (data == null) return {error : "pokemon_not_found"}
 
     const pokemon_info = {
         name : data.name,
